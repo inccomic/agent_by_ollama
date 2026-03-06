@@ -5,6 +5,16 @@ import ollama
 import json
 import os
 from datetime import datetime
+import re
+
+from tool import (
+    calculate,
+    calculate_info,
+    get_weather,
+    get_weather_info,
+    get_current_time,
+    get_current_time_info,
+)
 
 
 # 智能体对象
@@ -18,8 +28,72 @@ class AgentClass:
 
         self.load_memory()
 
-    # 与模型进行对话
+        self.tools = {  # 工具
+            "calculator": calculate,
+            "weather": get_weather,
+            "time": get_current_time,
+        }
+
+    # 对话入口
     def chat(self, message):
+
+        # 首先分析用户意图
+        intent = self.analyze_intent(message)
+
+        if intent["tool_needed"] and intent["tool"] in self.tools:
+            tool_result = self.tools[intent["tool"]](intent["parameters"])
+            return self.generate_response(message, tool_result, intent["tool"])
+        else:
+            return self.direct_chat(message)
+
+    # 分析用户意图，决定是否需要使用工具
+    def analyze_intent(self, message):
+        prompt = f"""
+        分析用户的请求，判断是否需要使用工具来完成。
+        可用工具有：
+            {calculate_info}
+            {get_weather_info}
+            {get_current_time_info}
+        
+        用户请求：{message}
+        
+        请用JSON格式回复，包含以下字段：
+        - tool_needed: 布尔值，是否需要使用工具
+        - tool: 如果需要工具，指定工具名称
+        - parameters: 工具需要的参数
+        
+        示例回复：
+        {{"tool_needed": true, "tool": "calculator", "parameters": {{"expression": "2+3*4"}}}}
+        """
+
+        result = ollama.generate(model=self.model, prompt=prompt)
+        response = result.response
+
+        # 提取JSON部分
+        json_match = re.search(r"\{.*\}", response, re.DOTALL)
+
+        if json_match:
+            return json.loads(json_match.group())
+        else:
+            return {"tool_needed": False, "tool": "", "parameters": {}}
+
+    # 基于工具结果生成回复
+    def generate_response(self, user_msg, tool_result, tool_name):
+        prompt = f"""
+        用户请求：{user_msg}
+        使用工具：{tool_name}
+        工具结果：{json.dumps(tool_result, ensure_ascii=False)}
+        
+        请基于工具结果，用自然语言回复用户。
+        """
+
+        result = ollama.generate(model=self.model, prompt=prompt)
+        response = result.response
+
+        return response
+
+    # 与模型进行对话
+    def direct_chat(self, message):
 
         # 搜索相关记忆
         relevant_memories = self.search_memory(message)
