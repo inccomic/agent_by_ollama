@@ -19,7 +19,7 @@
     </a>
 </p>
 
-> 请确保完成了Ollama的安装，并完成了llama3.2模型本地安装（ 相关内容可以查看 <a href="https://zxl20070701.github.io/notebook/index.html#/program/ai/ollama/install" target="_blank">《Ollama使用入门教程》</a> 进行学习）。
+> 请确保完成了Ollama的安装，并完成了qwen3模型本地安装（ 相关内容可以查看 <a href="https://zxl20070701.github.io/notebook/index.html#/program/ai/ollama/install" target="_blank">《Ollama使用入门教程》</a> 进行学习）。
 
 ## 如何使用？
 
@@ -35,6 +35,20 @@ pip3 install -r requirements.txt
 python3 ./src/main.py
 ```
 
+## 目录结构
+
+下面是主要文件说明：
+
+```md
+- data/ # 需要用到的数据
+- src/
+    - agent/ # 智能体对象
+    - memory/ # 记忆功能
+    - tools/ # 工具
+    - main.py # 代码入口
+    - test.py # 若干测试代码
+- requirements.txt 需要安装的依赖
+```
 ## 版权
 
 MIT License
