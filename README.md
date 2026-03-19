@@ -41,9 +41,11 @@ python3 ./src/main.py
 
 ```md
 - data/ # 需要用到的数据
+- skills/ # 若干skill技能
 - src/
     - agent/ # 智能体对象
     - memory/ # 记忆功能
+    - skills/ # 解析”skills技能“文件夹相关工具
     - tools/ # 工具
     - main.py # 代码入口
     - test.py # 若干测试代码

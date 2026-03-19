@@ -4,6 +4,7 @@
 from .voiceIt import voiceIt
 from .readFile import readFile
 from .writeFile import writeFile
+from skills.loadSKILL import loadSKILL
 
 
 # 可用工具箱
@@ -75,6 +76,23 @@ class ToolsClass:
                     },
                 },
             },
+            {
+                "type": "function",
+                "function": {
+                    "name": "loadSKILL",
+                    "description": "读取指定技能SKILL的SKILL.md文件",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "SKILLName": {
+                                "type": "string",
+                                "description": "技能名称，也就是name",
+                            },
+                        },
+                        "required": ["SKILLName"],
+                    },
+                },
+            },
         ]
 
     # 执行具体工具
@@ -85,5 +103,7 @@ class ToolsClass:
             return readFile(**toolArguments)
         elif toolName == "writeFile":
             return writeFile(**toolArguments)
+        elif toolName == "loadSKILL":
+            return loadSKILL(**toolArguments)
         else:
             return "Unknown tool"
